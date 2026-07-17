@@ -120,7 +120,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Navbar />
+      <Navbar transparent />
 
       {/* ─────────── HERO ─────────── */}
       <section className="relative pt-28 pb-20 lg:pt-40 lg:pb-32 overflow-hidden">
@@ -388,29 +388,29 @@ export default function LandingPage() {
                 icon: HiAcademicCap,
                 title: 'AI-Powered Tests',
                 desc: 'Adaptive difficulty that matches your skill level and helps you improve faster with personalized question sets.',
-                color: 'from-indigo-500 to-blue-500',
                 bg: 'bg-indigo-50',
+                iconColor: '#6366f1',
               },
               {
                 icon: HiClipboardDocumentList,
                 title: 'Real Exam Pattern',
                 desc: 'Tests designed to mirror actual exam formats, timing, and difficulty — so there are no surprises on exam day.',
-                color: 'from-purple-500 to-pink-500',
                 bg: 'bg-purple-50',
+                iconColor: '#a855f7',
               },
               {
                 icon: HiChartBar,
                 title: 'Detailed Analytics',
                 desc: 'Deep-dive into your performance with section-wise analysis, time tracking, and improvement suggestions.',
-                color: 'from-emerald-500 to-teal-500',
                 bg: 'bg-emerald-50',
+                iconColor: '#10b981',
               },
               {
                 icon: HiCurrencyRupee,
                 title: 'Affordable Pricing',
                 desc: 'Premium quality at budget-friendly prices. Many free tests available to get you started immediately.',
-                color: 'from-amber-500 to-orange-500',
                 bg: 'bg-amber-50',
+                iconColor: '#f59e0b',
               },
             ].map((item, i) => (
               <motion.div
@@ -421,21 +421,15 @@ export default function LandingPage() {
                 variants={fadeUp}
                 custom={i}
                 whileHover={{ y: -6 }}
-                className="relative bg-white/60 backdrop-blur-xl border border-white/50 rounded-2xl p-7 shadow-lg shadow-gray-100/50 hover:shadow-xl hover:shadow-indigo-500/10 transition-all duration-300 group"
+                className="bg-white rounded-2xl p-7 border border-gray-100 shadow-lg shadow-gray-100/50 hover:shadow-xl hover:shadow-indigo-500/10 transition-all duration-300 group"
               >
-                {/* Glassmorphism overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-white/20 rounded-2xl" />
-                <div className="relative">
-                  <div
-                    className={`w-14 h-14 rounded-2xl ${item.bg} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform`}
-                  >
-                    <item.icon className={`w-7 h-7 bg-gradient-to-br ${item.color} bg-clip-text text-transparent`} style={{ color: undefined }} />
-                    {/* Since bg-clip-text doesn't work on icons, use a solid color */}
-                    <item.icon className={`w-7 h-7 absolute`} style={{ color: item.color.includes('indigo') ? '#6366f1' : item.color.includes('purple') ? '#a855f7' : item.color.includes('emerald') ? '#10b981' : '#f59e0b' }} />
-                  </div>
-                  <h3 className="text-lg font-bold text-gray-800 mb-2">{item.title}</h3>
-                  <p className="text-sm text-gray-500 leading-relaxed">{item.desc}</p>
+                <div
+                  className={`w-14 h-14 rounded-2xl ${item.bg} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform`}
+                >
+                  <item.icon className="w-7 h-7" style={{ color: item.iconColor }} />
                 </div>
+                <h3 className="text-lg font-bold text-gray-800 mb-2">{item.title}</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">{item.desc}</p>
               </motion.div>
             ))}
           </div>

@@ -9,7 +9,7 @@ const navLinks = [
   { name: 'Mock Tests', path: '/mock-tests' },
 ];
 
-export default function Navbar() {
+export default function Navbar({ transparent = false }) {
   const { user, logout, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -44,8 +44,10 @@ export default function Navbar() {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-white/80 backdrop-blur-xl shadow-lg shadow-indigo-500/5 border-b border-white/20'
-          : 'bg-transparent'
+          ? 'bg-white/90 backdrop-blur-xl shadow-lg shadow-indigo-500/5 border-b border-gray-200/60'
+          : transparent
+            ? 'bg-transparent'
+            : 'bg-white/95 backdrop-blur-xl border-b border-gray-100'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
