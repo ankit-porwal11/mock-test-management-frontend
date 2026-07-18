@@ -22,6 +22,7 @@ export default function CheckoutPage() {
   const [test, setTest] = useState(null);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
+  const [paymentId, setPaymentId] = useState(null);
 
   useEffect(() => {
     const fetchTest = async () => {
@@ -38,42 +39,162 @@ export default function CheckoutPage() {
     fetchTest();
   }, [mockTestId]);
 
-  const handlePayment = async () => {
-    setProcessing(true);
+  useEffect(() => {
+     console.log("POLLING STARTED", paymentId);
+
+  if (!paymentId) return;
+
+  const interval = setInterval(async () => {
+
+    console.log("CHECKING PAYMENT");
+
     try {
-      const res = await api.post('/payments/create-payment', { mockTestId });
-      const paymentData = res.data.data;
 
-      // Handle PayU redirect: backend returns form data or redirect URL
-      if (paymentData?.url) {
-        window.location.href = paymentData.url;
-      } else if (paymentData?.formAction || paymentData?.action) {
-        // Create and submit a hidden form for PayU
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = paymentData.formAction || paymentData.action;
+      const res = await api.get(
+        `/payments/get-payment/${paymentId}`
+      );
 
-        const formFields = paymentData.formFields || paymentData.params || paymentData;
-        Object.entries(formFields).forEach(([key, value]) => {
-          if (key === 'formAction' || key === 'action' || key === 'url') return;
-          const input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = key;
-          input.value = String(value);
-          form.appendChild(input);
-        });
+      console.log("FULL RESPONSE", res.data);
 
-        document.body.appendChild(form);
-        form.submit();
-      } else {
-        // Fallback: if backend returns a different structure, try to handle it
-        toast.error('Unexpected payment response. Please contact support.');
+      const payment = res.data.data;
+
+      if (payment.status === "SUCCESS") {
+
+        clearInterval(interval);
+
+        toast.success("Payment Successful");
+
+        navigate(`/mock-tests/${mockTestId}`);
       }
+
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to initiate payment');
-      setProcessing(false);
+      console.log(err);
     }
-  };
+
+  }, 3000);
+
+  return () => clearInterval(interval);
+
+}, [paymentId, mockTestId, navigate]);
+
+//   useEffect(() => {
+
+//   if (!paymentId) return;
+
+//   const interval = setInterval(async () => {
+
+//     try {
+
+//       const res = await api.get(
+//         `/payments/get-payment/${paymentId}`
+//       );
+
+//       console.log(
+//         "PAYMENT STATUS =>",
+//         res.data.data.status
+//       );
+
+//       if (
+//         res.data.data.status === "SUCCESS"
+//       ) {
+
+//         clearInterval(interval);
+
+//         toast.success(
+//           "Payment Successful"
+//         );
+
+//         window.location.reload();
+//       }
+
+//     } catch (err) {
+//       console.log(err);
+//     }
+
+//   }, 3000);
+
+//   return () => clearInterval(interval);
+
+// }, [paymentId]);
+
+  const handlePayment = async () => {
+    alert("HANDLE PAYMENT CALLED");
+    console.log("BUTTON CLICKED");
+    setProcessing(true);
+
+  
+    try {
+
+    // STEP 1 - Payment create karo
+    const createRes = await api.post(
+      "/payments/create-payment",
+      { mockTestId }
+    );
+
+    console.log(
+      "CREATE PAYMENT =>",
+      createRes.data
+    );
+
+    const paymentId =
+      createRes.data.data.paymentId;
+
+      setPaymentId(paymentId);
+
+    // STEP 2 - PayU data lo
+    const payuRes = await api.post(
+      `/payu/initiate/${paymentId}`
+    );
+
+    console.log(
+      "PAYU RESPONSE =>",
+      payuRes.data
+    );
+
+    const {
+      action,
+      payuData
+    } = payuRes.data.data;
+
+    // STEP 3 - Form submit karo
+    const form =
+      document.createElement("form");
+
+    form.method = "POST";
+    form.action = action;
+
+    Object.entries(payuData).forEach(
+      ([key, value]) => {
+
+        const input =
+          document.createElement("input");
+
+        input.type = "hidden";
+        input.name = key;
+        input.value = value;
+
+        form.appendChild(input);
+      }
+    );
+
+    document.body.appendChild(form);
+
+    // form.target = "_blank";
+
+    form.submit();
+
+  } catch (err) {
+
+    console.error(err);
+
+    toast.error(
+      err.response?.data?.message ||
+      "Payment failed"
+    );
+
+    setProcessing(false);
+  }
+}
 
   if (loading) {
     return (
@@ -226,3 +347,51 @@ export default function CheckoutPage() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+//   try {
+  //     // const res = await api.post('/payments/create-payment', { mockTestId });
+
+  //     // console.log("PAYMENT RESPONSE =>", res.data);
+
+  //     // const paymentData = res.data.data;
+
+  //     // // Handle PayU redirect: backend returns form data or redirect URL
+  //     // if (paymentData?.url) {
+  //     //   window.location.href = paymentData.url;
+  //     // } else if (paymentData?.formAction || paymentData?.action) {
+  //     //   // Create and submit a hidden form for PayU
+  //     //   const form = document.createElement('form');
+  //     //   form.method = 'POST';
+  //     //   form.action = paymentData.formAction || paymentData.action;
+
+  //     //   const formFields = paymentData.formFields || paymentData.params || paymentData;
+  //     //   Object.entries(formFields).forEach(([key, value]) => {
+  //     //     if (key === 'formAction' || key === 'action' || key === 'url') return;
+  //     //     const input = document.createElement('input');
+  //     //     input.type = 'hidden';
+  //     //     input.name = key;
+  //     //     input.value = String(value);
+  //     //     form.appendChild(input);
+  //     //   });
+
+  //     //   document.body.appendChild(form);
+  //     //   form.submit();
+  //     // } 
+  //     else {
+  //       // Fallback: if backend returns a different structure, try to handle it
+  //       toast.error('Unexpected payment response. Please contact support.');
+  //     }
+  //   } catch (err) {
+  //     toast.error(err.response?.data?.message || 'Failed to initiate payment');
+  //     setProcessing(false);
+  //   }
+  // };

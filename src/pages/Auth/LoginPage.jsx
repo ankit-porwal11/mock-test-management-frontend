@@ -29,6 +29,9 @@ export default function LoginPage() {
       toast.success('Welcome back! 🎉');
       navigate('/dashboard');
     } catch (err) {
+        console.log("LOGIN ERROR =>", err);
+  console.log("LOGIN RESPONSE =>", err?.response);
+  console.log("LOGIN DATA =>", err?.response?.data);
       toast.error(err?.response?.data?.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);

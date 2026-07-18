@@ -10,6 +10,23 @@ export const createPayment = async (data) => {
 };
 
 /**
+ * PayU Initiate
+ */
+export const initiatePayUPayment = async (
+  paymentId
+) => {
+
+  const response =
+    await axiosInstance.post(
+      `/payu/initiate/${paymentId}`
+    );
+
+  return response.data;
+};
+
+
+
+/**
  * Verify a payment after gateway callback.
  * @param {Object} data - { razorpay_order_id, razorpay_payment_id, razorpay_signature }
  */

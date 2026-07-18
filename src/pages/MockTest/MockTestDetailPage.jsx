@@ -44,13 +44,33 @@ export default function MockTestDetailPage() {
           const paymentRes = await api.get('/payments/payment-history', {
             params: { status: 'SUCCESS', limit: 100 },
           });
-          const payments = paymentRes.data.data?.payments || paymentRes.data.data || [];
-          const purchased = payments.some(
-            (p) =>
-              (p.mockTestId?._id || p.mockTestId || p.mockTest?._id || p.mockTest) === id &&
-              p.status === 'SUCCESS'
-          );
-          setIsPurchased(purchased);
+         const payments = paymentRes.data.data?.payments || paymentRes.data.data || [];
+
+console.log("PAYMENTS => ", payments);
+console.log("CURRENT TEST => ", id);
+
+payments.forEach((p) => {
+  console.log(
+    "COMPARE =>",
+    p.mockTest?._id,
+    id,
+    p.mockTest?._id?.toString() === id
+  );
+});
+
+const purchased = payments.some((p) => {
+  const testId =
+    p.mockTest?._id?.toString() ||
+    p.mockTestId?._id?.toString() ||
+    p.mockTest?.toString() ||
+    p.mockTestId?.toString();
+
+  return testId === id && p.status === "SUCCESS";
+});
+
+console.log("PURCHASED =>", purchased);
+
+setIsPurchased(purchased);
         } catch {
           // Fail silently — purchase check is non-critical
         } finally {
