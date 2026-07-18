@@ -23,12 +23,17 @@ export default function MyPurchasesPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await api.get('/payments/payment-history', {
-        params: { status: 'SUCCESS', limit: 100 },
-      });
-      const data = res.data.data;
-      const payments = Array.isArray(data) ? data : data?.payments || data?.docs || [];
-      setPurchases(payments);
+      const res = await api.get(
+ '/purchases/my-purchases'
+);
+
+setPurchases(
+ res.data.data || []
+);
+     const purchases =
+  res.data.data?.purchases || [];
+
+setPurchases(purchases);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load purchases');
     } finally {
@@ -142,7 +147,7 @@ export default function MyPurchasesPage() {
                       </div>
                       <div className="flex items-center gap-2 text-dark-500 text-sm">
                         <HiCurrencyRupee className="w-4 h-4 text-success-500" />
-                        {formatPrice(purchase.amount)}
+                        {formatPrice(test.price)}
                       </div>
                       <div className="flex items-center gap-2 text-dark-500 text-sm">
                         <HiCalendarDays className="w-4 h-4 text-warning-500" />
@@ -150,16 +155,19 @@ export default function MyPurchasesPage() {
                       </div>
                     </div>
 
-                    {test.difficulty && (
-                      <span className={`badge ${getDifficultyColor(test.difficulty)} mb-4 inline-flex`}>
-                        {test.difficulty}
+                    {test.difficultyLevel && (
+                      <span className={`badge ${getDifficultyColor(test.difficultyLevel)} mb-4 inline-flex`}>
+                        {test.difficultyLevel}
                       </span>
                     )}
 
-                    <button className="btn-success w-full py-2.5 mt-2">
+                   <Link
+  to={`/mock-tests/${test._id}`}
+  className="btn-success w-full py-2.5 mt-2"
+>
                       <HiPlayCircle className="w-5 h-5" />
                       Start Test
-                    </button>
+                    </Link>
                   </div>
                 </motion.div>
               );

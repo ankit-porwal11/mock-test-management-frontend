@@ -2,17 +2,53 @@ import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { HiCheckCircle, HiArrowRight, HiClipboardDocumentList, HiHome } from 'react-icons/hi2';
+import api from '../../api/axios';
 
 export default function PaymentSuccessPage() {
   const [searchParams] = useSearchParams();
   const [showConfetti, setShowConfetti] = useState(true);
-  const transactionId = searchParams.get('transactionId') || searchParams.get('txnid') || 'N/A';
+  const [payment,setPayment] = useState(null);
+  const transactionId =
+  searchParams.get('transactionId') ||
+  searchParams.get('txnid') ||
+  'N/A';
 
+const mockTestId =
+  searchParams.get('mockTestId');
   useEffect(() => {
     const timer = setTimeout(() => setShowConfetti(false), 5000);
+//     setPayment(
+//  res.data.data
+// );
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+
+  const paymentId =
+    searchParams.get("paymentId");
+
+  if (!paymentId) return;
+
+  api
+    .get(`/payments/get-payment/${paymentId}`)
+   .then((res) => {
+
+  console.log(
+    "PAYMENT DATA =>",
+    res.data
+  );
+
+  setPayment(
+    res.data.data
+  );
+
+})
+    .catch((err) => {
+      console.log(err);
+    });
+
+}, []);
   return (
     <div className="min-h-screen bg-gradient-to-br from-success-50 via-white to-primary-50 flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background decorations */}
@@ -131,11 +167,12 @@ export default function PaymentSuccessPage() {
           className="mt-6"
         >
           <Link
-            to="/dashboard/purchases"
-            className="text-primary-600 hover:text-primary-700 text-sm font-semibold inline-flex items-center gap-1 transition-colors"
-          >
-            View My Purchases <HiArrowRight className="w-4 h-4" />
-          </Link>
+  to={`/mock-tests/${mockTestId}`}
+  className="text-primary-600 hover:text-primary-700 text-sm font-semibold inline-flex items-center gap-1 transition-colors"
+>
+  Start Purchased Test
+  <HiArrowRight className="w-4 h-4" />
+</Link>
         </motion.div>
       </motion.div>
     </div>
