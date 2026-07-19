@@ -1,6 +1,6 @@
 export const APP_NAME = 'PrepMaster';
 
-export const BASE_URL = 'http://localhost:8000/api/v1';
+export const BASE_URL = import.meta.env.VITE_API_URL;;
 
 export const DIFFICULTY_LEVELS = ['Easy', 'Medium', 'Hard'];
 
